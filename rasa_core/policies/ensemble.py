@@ -349,6 +349,8 @@ class SimplePolicyEnsemble(PolicyEnsemble):
                 result = probabilities
                 best_policy_name = 'policy_{}_{}'.format(i, type(p).__name__)
                 best_policy_priority = p.priority
+            logger.debug("Policy '{}' best prediction action is '{}' with confidence {}".format(type(p).__name__,
+                                        domain.action_names[np.argmax(probabilities)], np.max(probabilities)))
 
         if (result.index(max_confidence) ==
                 domain.index_for_action(ACTION_LISTEN_NAME) and
