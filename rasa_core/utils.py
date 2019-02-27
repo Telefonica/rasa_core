@@ -77,7 +77,8 @@ def class_from_module_path(module_path: Text) -> Any:
     from rasa_core.policies.memoization import (
         MemoizationPolicy,
         AugmentedMemoizationPolicy)
-    from rasa_core.policies.embedding_policy import EmbeddingPolicy
+# This line is commented out to accelerate debugging (since loading this class seems to have a big impact in load time)
+#    from rasa_core.policies.embedding_policy import EmbeddingPolicy
     from rasa_core.policies.form_policy import FormPolicy
     from rasa_core.policies.sklearn_policy import SklearnPolicy
 
@@ -210,7 +211,8 @@ def configure_colored_logging(loglevel):
         use_chroot=False,
         fmt='%(asctime)s %(levelname)-8s %(name)s  - %(message)s',
         level_styles=level_styles,
-        field_styles=field_styles)
+        field_styles=field_styles,
+        milliseconds=True)
 
 
 def request_input(valid_values=None, prompt=None, max_suggested=3):
