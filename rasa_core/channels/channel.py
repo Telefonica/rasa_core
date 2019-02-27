@@ -55,6 +55,12 @@ class UserMessage(object):
 
         self.parse_data = parse_data
 
+    def __str__(self):
+        return "UserMessage [text:{}, message_id:{}, output_channel:{}, " \
+               "sender_id:{}, input_channel:{}, parse_data:{}]".format(self.text, self.message_id, self.output_channel,
+                                                                       self.sender_id, self.input_channel,
+                                                                       self.parse_data)
+
 
 def register(input_channels: List['InputChannel'],
              app: Flask,
