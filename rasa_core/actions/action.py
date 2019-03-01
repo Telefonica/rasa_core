@@ -15,10 +15,17 @@ from rasa_core.events import (UserUtteranceReverted, UserUttered,
                               ActionExecuted, Event)
 from rasa_core.utils import EndpointConfig
 
+from auracog_flow.rasa_core.channels.aura_channel import CollectingCommandOutputChannel
+
 if typing.TYPE_CHECKING:
     from rasa_core.trackers import DialogueStateTracker
     from rasa_core.dispatcher import Dispatcher
     from rasa_core.domain import Domain
+
+
+
+
+from rasa_core_sdk.executor import CollectingDispatcher
 
 logger = logging.getLogger(__name__)
 
@@ -36,13 +43,17 @@ ACTION_DEFAULT_ASK_AFFIRMATION_NAME = 'action_default_ask_affirmation'
 
 ACTION_DEFAULT_ASK_REPHRASE_NAME = 'action_default_ask_rephrase'
 
+ACTION_END_OF_DIALOGUE = "action_end_of_dialogue"
+
+END_OF_DIALOGUE_COMMAND = "END_OF_DIALOGUE"
 
 def default_actions() -> List['Action']:
     """List default actions."""
     return [ActionListen(), ActionRestart(),
             ActionDefaultFallback(), ActionDeactivateForm(),
             ActionRevertFallbackEvents(), ActionDefaultAskAffirmation(),
-            ActionDefaultAskRephrase()]
+            ActionDefaultAskRephrase(),
+            ActionEndOfDialogue()]
 
 
 def default_action_names() -> List[Text]:
@@ -501,4 +512,26 @@ class ActionDefaultAskRephrase(Action):
         dispatcher.utter_template("utter_ask_rephrase", tracker,
                                   silent_fail=True)
 
+        return []
+
+
+class ActionEndOfDialogue(Action):
+    """
+    This action marks the end of a dialogue.
+    """
+
+    def name(self) -> Text:
+        return ACTION_END_OF_DIALOGUE
+
+    def run(self, dispatcher: 'Dispatcher', tracker: 'DialogueStateTracker',
+            domain: 'Domain'):
+        # TODO
+        # Actions To Be Defined, such as
+        #     - dump the whole conversation to logs
+        #     - free memory in dialogue state trackers
+        logger.debug("Executing Action action_end_of_dialogue")
+        if hasattr(dispatcher, "output_channel"):
+            if isinstance(dispatcher.output_channel, CollectingCommandOutputChannel):
+                # Add END_OF_DIALOGUE_COMMAND to output channel
+                dispatcher.output_channel.send_command(dispatcher.sender_id, END_OF_DIALOGUE_COMMAND)
         return []
