@@ -2,7 +2,7 @@
 
 --------------
 
-__This is a fork from of Rasa Core version 0.13.2, extended to support Aura conversation requirements__
+__This is a fork of Rasa Core version 0.13.2, extended to support Aura conversation requirements__
 
 -------------- 
 
