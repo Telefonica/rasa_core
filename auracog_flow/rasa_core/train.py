@@ -7,7 +7,7 @@ from builtins import str
 
 import argparse
 import logging
-import os
+import os, shutil
 import tempfile
 
 from rasa_core import config, cli
@@ -166,6 +166,14 @@ def add_general_args(parser):
     utils.add_logging_option_arguments(parser)
 
 
+def persist_model_conf(input, output):
+    try:
+        shutil.copy(input, output + '/' + 'config_policy.yml')
+
+    except:
+        print("Se ha producido un error")
+
+
 def train_dialogue_model(domain_file, stories_file, output_path,
                          interpreter=None,
                          endpoints=AvailableEndpoints(),
@@ -196,6 +204,9 @@ def train_dialogue_model(domain_file, stories_file, output_path,
                                     **data_load_args)
     agent.train(training_data, **kwargs)
     agent.persist(output_path, dump_stories)
+
+    # Persisting the policy configuration in the model folder
+    persist_model_conf(policy_config, output_path)
 
     return agent
 

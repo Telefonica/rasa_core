@@ -12,6 +12,7 @@ from auracog_flow.Metrics.eval_func import keep_model, extract_report
 
 import argparse
 import io
+import yaml
 import json
 import logging
 import numpy as np
@@ -105,13 +106,13 @@ def add_args_to_parser(parser):
                  "is thrown. This can be used to validate stories during "
                  "tests, e.g. on travis.")
     parser.add_argument(
-        '--mlflow',
-        default='True',
-        help="Choose if the user want to log the result in MLFLOW")
+            '--mlflow',
+            default='True',
+            help="Choose if the user want to log the result in MLFLOW")
     parser.add_argument(
-        '--tracker',
-        default='http://localhost:5000',
-        help="Set up the MLFLOW tracking server")
+            '--tracker',
+            default='http://localhost:5000',
+            help="Set up the MLFLOW tracking server")
 
     cli.arguments.add_core_model_arg(parser)
 
@@ -144,6 +145,18 @@ def add_aura_args_to_parser(parser):
                  "this parameter should not be used.")
     return parser
 
+
+def get_pipeline(model):
+
+    pipeline=[]
+    metadata=os.path.join(model, 'metadata.json')
+    with open(str(metadata)) as file:
+        y=json.load(file)
+
+        for i in range(len(y['pipeline'])):
+            pipeline.append(y['pipeline'][i]['name'])
+
+    return(pipeline)
 
 class EvaluationStore(object):
     """Class storing action, intent and entity predictions and targets."""
@@ -311,7 +324,11 @@ def _generate_trackers(resource_name, agent, max_stories=None, use_e2e=False):
     g = TrainingDataGenerator(story_graph, agent.domain,
                               use_story_concatenation=False,
                               augmentation_factor=0,
-                              tracker_limit=max_stories)
+                              tracker_limit=max_stories,
+                              debug_plots=True)
+
+
+
     return g.generate()
 
 
@@ -715,7 +732,10 @@ if __name__ == '__main__':
     if (cmdline_arguments.mlflow == 'True'):
         mlflow.set_tracking_uri(cmdline_arguments.tracker)
         mlflow.set_experiment('RASA')
-        mlflow.start_run()
+        if cmdline_arguments.e2e==True:
+            mlflow.start_run(run_name='EVALUATION: E2E')
+        else:
+            mlflow.start_run(run_name='EVALUATION: CORE')
 
     if cmdline_arguments.mode == 'default':
 
@@ -747,6 +767,7 @@ if __name__ == '__main__':
                              cmdline_arguments.e2e)
 
         if (cmdline_arguments.mlflow == 'True'):
+
             # Extracting Reports #
             # ***************************
 
@@ -767,13 +788,17 @@ if __name__ == '__main__':
 
             keep_model(cmdline_arguments.core)
 
-            #   Logging Parameters #
-            #*************************
+            #   Logging Parameters (POLICIES)#
+            #************************************
+            if cmdline_arguments.e2e==True:
+                mlflow.log_param('NLU_PIPELINE', get_pipeline(cmdline_arguments.nlu))
 
-            if (report['is_end_to_end_evaluation']==True):
-                mlflow.log_param('EVALUATION', 'E2E')
-            else:
-                mlflow.log_param('EVALUATION', 'CORE')
+            with open(cmdline_arguments.core + '/config_policies.yml', 'r') as policies:
+                data_loaded = yaml.load(policies)
+
+            for i in range (len(data_loaded['policies'])):
+                mlflow.log_param('CORE_POLICIE_' + str(i), data_loaded['policies'][i])
+
 
     elif cmdline_arguments.mode == 'compare':
 

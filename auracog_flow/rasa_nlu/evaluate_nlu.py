@@ -4,7 +4,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import mlflow
-
+import os
 from auracog_flow.Metrics.eval_func import keep_model, extract_metrics,extract_report
 
 import itertools
@@ -84,6 +84,18 @@ def create_argument_parser():
 
     return parser
 
+
+def get_pipeline(model):
+
+    pipeline=[]
+    metadata=os.path.join(model, 'metadata.json')
+    with open(str(metadata)) as file:
+        y=json.load(file)
+
+        for i in range(len(y['pipeline'])):
+            pipeline.append(y['pipeline'][i]['name'])
+
+    return(pipeline)
 
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
@@ -913,12 +925,14 @@ def main():
                                 cmdline_args.confmat,
                                 cmdline_args.histogram)
 
+        pipeline=get_pipeline(cmdline_args.model)
+
 
         if (cmdline_args.mlflow=='True'):
 
             mlflow.set_tracking_uri(cmdline_args.tracker)
             mlflow.set_experiment('RASA')
-            mlflow.start_run()
+            mlflow.start_run(run_name='EVALUATION:NLU')
 
 
 
@@ -943,7 +957,8 @@ def main():
 
             mlflow.log_artifact('confmat.png', 'images')
             mlflow.log_artifact('hist.png', 'images')
-            mlflow.log_artifact('errors.json', 'errors')
+            if os.path.exists('errors.json'):
+                mlflow.log_artifact('errors.json', 'errors')
 
             #  Keep model
             #*******************************
@@ -952,7 +967,7 @@ def main():
 
             # Log params
             #******************
-            mlflow.log_param('EVALUATION', 'NLU')
+            mlflow.log_param('PIPELINE_NLU',pipeline)
 
             mlflow.end_run()
 
