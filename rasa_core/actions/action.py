@@ -23,8 +23,6 @@ if typing.TYPE_CHECKING:
     from rasa_core.domain import Domain
 
 
-
-
 from rasa_core_sdk.executor import CollectingDispatcher
 
 logger = logging.getLogger(__name__)
@@ -45,7 +43,20 @@ ACTION_DEFAULT_ASK_REPHRASE_NAME = 'action_default_ask_rephrase'
 
 ACTION_END_OF_DIALOGUE = "action_end_of_dialogue"
 
+ACTION_FALLBACK_INTENT_UNKNOWN = "action_fallback_intent_unknown"
+
+ACTION_FALLBACK_ENTITIES_UNKNOWN = "action_fallback_entities_unknown"
+
+ACTION_FALLBACK_GENERIC = "action_fallback_generic"
+
 END_OF_DIALOGUE_COMMAND = "END_OF_DIALOGUE"
+
+FALLBACK_INTENT_UNKNOWN_COMMAND = "FALLBACK_ITEM_UNKNOWN"
+
+FALLBACK_ENTITIES_UNKNOWN_COMMAND = "FALLBACK_ENTITIES_UNKNOWN"
+
+FALLBACK_GENERIC_COMMAND = "FALLBACK_GENERIC"
+
 
 def default_actions() -> List['Action']:
     """List default actions."""
@@ -53,7 +64,8 @@ def default_actions() -> List['Action']:
             ActionDefaultFallback(), ActionDeactivateForm(),
             ActionRevertFallbackEvents(), ActionDefaultAskAffirmation(),
             ActionDefaultAskRephrase(),
-            ActionEndOfDialogue()]
+            ActionEndOfDialogue(),
+            ActionFallbackEntitiesUnknown(), ActionFallbackIntentUnknown(), ActionFallbackGeneric()]
 
 
 def default_action_names() -> List[Text]:
@@ -534,4 +546,70 @@ class ActionEndOfDialogue(Action):
             if isinstance(dispatcher.output_channel, CollectingCommandOutputChannel):
                 # Add END_OF_DIALOGUE_COMMAND to output channel
                 dispatcher.output_channel.send_command(dispatcher.sender_id, END_OF_DIALOGUE_COMMAND)
+        return []
+
+
+class ActionFallbackEntitiesUnknown(Action):
+    """
+    This action marks a fallback action due to the reception of unknown entities.
+    """
+
+    def name(self) -> Text:
+        return ACTION_FALLBACK_ENTITIES_UNKNOWN
+
+    def run(self, dispatcher: 'Dispatcher', tracker: 'DialogueStateTracker',
+            domain: 'Domain'):
+        # TODO
+        # Actions To Be Defined, such as
+        #     - dump the whole conversation to logs
+        #     - free memory in dialogue state trackers
+        logger.debug("Executing Action {}".format(ACTION_FALLBACK_ENTITIES_UNKNOWN))
+        if hasattr(dispatcher, "output_channel"):
+            if isinstance(dispatcher.output_channel, CollectingCommandOutputChannel):
+                # Add FALLBACK_ENTITIES_UNKNOWN_COMMAND to output channel
+                dispatcher.output_channel.send_command(dispatcher.sender_id, FALLBACK_ENTITIES_UNKNOWN_COMMAND)
+        return []
+
+
+class ActionFallbackIntentUnknown(Action):
+    """
+    This action marks a fallback action due to the reception of an unknown intent.
+    """
+
+    def name(self) -> Text:
+        return ACTION_FALLBACK_INTENT_UNKNOWN
+
+    def run(self, dispatcher: 'Dispatcher', tracker: 'DialogueStateTracker',
+            domain: 'Domain'):
+        # TODO
+        # Actions To Be Defined, such as
+        #     - dump the whole conversation to logs
+        #     - free memory in dialogue state trackers
+        logger.debug("Executing Action {}".format(ACTION_FALLBACK_INTENT_UNKNOWN))
+        if hasattr(dispatcher, "output_channel"):
+            if isinstance(dispatcher.output_channel, CollectingCommandOutputChannel):
+                # Add FALLBACK_INTENT_UNKNOWN_COMMAND to output channel
+                dispatcher.output_channel.send_command(dispatcher.sender_id, FALLBACK_INTENT_UNKNOWN_COMMAND)
+        return []
+
+
+class ActionFallbackGeneric(Action):
+    """
+    This action marks a fallback action due to the reception of an unknown intent.
+    """
+
+    def name(self) -> Text:
+        return ACTION_FALLBACK_GENERIC
+
+    def run(self, dispatcher: 'Dispatcher', tracker: 'DialogueStateTracker',
+            domain: 'Domain'):
+        # TODO
+        # Actions To Be Defined, such as
+        #     - dump the whole conversation to logs
+        #     - free memory in dialogue state trackers
+        logger.debug("Executing Action {}".format(ACTION_FALLBACK_GENERIC))
+        if hasattr(dispatcher, "output_channel"):
+            if isinstance(dispatcher.output_channel, CollectingCommandOutputChannel):
+                # Add FALLBACK_GENERIC_COMMAND to output channel
+                dispatcher.output_channel.send_command(dispatcher.sender_id, FALLBACK_GENERIC_COMMAND)
         return []

@@ -106,13 +106,13 @@ def add_args_to_parser(parser):
                  "is thrown. This can be used to validate stories during "
                  "tests, e.g. on travis.")
     parser.add_argument(
-            '--mlflow',
-            default='True',
-            help="Choose if the user want to log the result in MLFLOW")
+        '--mlflow',
+        default='True',
+        help="Choose if the user want to log the result in MLFLOW")
     parser.add_argument(
-            '--tracker',
-            default='http://localhost:5000',
-            help="Set up the MLFLOW tracking server")
+        '--tracker',
+        default='http://localhost:5000',
+        help="Set up the MLFLOW tracking server")
 
     cli.arguments.add_core_model_arg(parser)
 
@@ -324,11 +324,7 @@ def _generate_trackers(resource_name, agent, max_stories=None, use_e2e=False):
     g = TrainingDataGenerator(story_graph, agent.domain,
                               use_story_concatenation=False,
                               augmentation_factor=0,
-                              tracker_limit=max_stories,
-                              debug_plots=True)
-
-
-
+                              tracker_limit=max_stories)
     return g.generate()
 
 
