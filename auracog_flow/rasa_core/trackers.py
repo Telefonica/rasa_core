@@ -551,6 +551,22 @@ class DialogueStateTracker(object):
                          "added all your slots to your domain file."
                          "".format(key))
 
+    def set_slot(self, key, value, add_to_events=True):
+        # type: (Text, Any, Optional[bool]) -> None
+        """Set the value of a slot if that slot exists.
+        :param key:
+        :param value:
+        :param add_to_events: Whether this slot set operation should be added to the list of events.
+        """
+        if key in self.slots:
+            self.slots[key].value = value
+            if add_to_events:
+                self.add_event_no_apply(SlotSet(key, value))
+        else:
+            logger.error("Tried to set non existent slot '{}'. Make sure you "
+                         "added all your slots to your domain file."
+                         "".format(key))
+
     def _create_events(self, evts):
         # type: (List[Event]) -> deque
 
@@ -662,8 +678,11 @@ class Watcher(object):
     """
     Base class for watchers.
     """
-    def __init__(self, name_register):
-        self.name_register = name_register
+    def __init__(self, name_register: List):
+        if name_register is None:
+            self.name_register = []
+        else:
+            self.name_register = name_register
 
     def fire(self, event: Event, tracker: DialogueStateTracker):
         """
@@ -863,7 +882,7 @@ class PersistentSlotsManager(object):
 #        if slot is None or (slot.name not in tracker.persistent_slots_expires) or (tracker.persistent_slots_expires[slot.name] < _t_now) or\
 #                        self._check_invalidate(slot.name, tracker):
         if _invalidated:
-            logger.debug("Reading persistent slot '{}' thorugh PersistentSlotsManager".format(slot.name))
+            logger.debug("Reading persistent slot '{}' through PersistentSlotsManager".format(slot.name))
             _value, _expire_seconds = self.read_slot(slot.name, tracker)
 #            tracker.slots[slot.name].value = PersistentSlot(_value)
             tracker.persistent_slots_expires[slot.name] = Expires(_expire_seconds)  # Save Expires
@@ -884,8 +903,9 @@ class PersistentSlotsManager(object):
         """
         res = {}
         if slot_name in tracker.persistent_slots_dependencies:
-            for _s_name in tracker.persistent_slots_dependencies[slot_name]:
-                res[_s_name] = tracker.slots[_s_name].value
+            if tracker.persistent_slots_dependencies[slot_name] is not None:
+                for _s_name in tracker.persistent_slots_dependencies[slot_name]:
+                    res[_s_name] = tracker.slots[_s_name].value
         return res
 
 
