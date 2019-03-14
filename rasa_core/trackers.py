@@ -342,7 +342,8 @@ class DialogueStateTracker(object):
 
         applied_events = self.applied_events()
         for event in applied_events:
-            event.apply_to(self)
+            # Set replay=True
+            event.apply_to(self, replay=True)
 
     def recreate_from_dialogue(self, dialogue: Dialogue) -> None:
         """Use a serialised `Dialogue` to update the trackers state.
