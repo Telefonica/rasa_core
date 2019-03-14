@@ -165,7 +165,13 @@ class Event(object):
         else:
             raise ValueError("Unknown event name '{}'.".format(type_name))
 
-    def apply_to(self, tracker: 'DialogueStateTracker') -> None:
+    def apply_to(self, tracker: 'DialogueStateTracker', replay=False) -> None:
+        """
+        Apply the effect of current event to a DialogueStateTracker.
+        :param tracker:
+        :param replay: This parameter should be True whenever this method is called from the reconstruction of a
+        tracker, i.e. the tracker is rebuild from evetns replay. See rasa_core.trackers.DialogueTracker.replay_events
+        """
         pass
 
 
@@ -270,7 +276,7 @@ class UserUttered(Event):
         else:
             return self.text
 
-    def apply_to(self, tracker: 'DialogueStateTracker') -> None:
+    def apply_to(self, tracker: 'DialogueStateTracker', replay=False) -> None:
         tracker.latest_message = self
         tracker.clear_followup_action()
 
@@ -304,7 +310,7 @@ class BotUttered(Event):
         return ("BotUttered(text: {}, data: {})"
                 "".format(self.text, json.dumps(self.data, indent=2)))
 
-    def apply_to(self, tracker: 'DialogueStateTracker') -> None:
+    def apply_to(self, tracker: 'DialogueStateTracker', replay=False) -> None:
 
         tracker.latest_bot_utterance = self
 
@@ -398,7 +404,7 @@ class SlotSet(Event):
         except KeyError as e:
             raise ValueError("Failed to parse set slot event. {}".format(e))
 
-    def apply_to(self, tracker):
+    def apply_to(self, tracker, replay=False):
         tracker._set_slot(self.key, self.value)
 
 
@@ -424,7 +430,7 @@ class Restarted(Event):
     def as_story_string(self):
         return self.type_name
 
-    def apply_to(self, tracker):
+    def apply_to(self, tracker, replay=False):
         from rasa_core.actions.action import ACTION_LISTEN_NAME
         tracker._reset()
         tracker.trigger_followup_action(ACTION_LISTEN_NAME)
@@ -452,7 +458,7 @@ class UserUtteranceReverted(Event):
     def as_story_string(self):
         return self.type_name
 
-    def apply_to(self, tracker: 'DialogueStateTracker') -> None:
+    def apply_to(self, tracker: 'DialogueStateTracker', replay=False) -> None:
         tracker._reset()
         tracker.replay_events()
 
@@ -479,7 +485,7 @@ class AllSlotsReset(Event):
     def as_story_string(self):
         return self.type_name
 
-    def apply_to(self, tracker):
+    def apply_to(self, tracker, replay=False):
         tracker._reset_slots()
 
 
@@ -584,7 +590,7 @@ class ActionReverted(Event):
     def as_story_string(self):
         return self.type_name
 
-    def apply_to(self, tracker: 'DialogueStateTracker') -> None:
+    def apply_to(self, tracker: 'DialogueStateTracker', replay=False) -> None:
         tracker._reset()
         tracker.replay_events()
 
@@ -611,7 +617,7 @@ class StoryExported(Event):
     def as_story_string(self):
         return self.type_name
 
-    def apply_to(self, tracker: 'DialogueStateTracker') -> None:
+    def apply_to(self, tracker: 'DialogueStateTracker', replay=False) -> None:
         if self.path:
             tracker.export_stories_to_file(self.path)
 
@@ -655,7 +661,7 @@ class FollowupAction(Event):
         d.update({"name": self.action_name})
         return d
 
-    def apply_to(self, tracker: 'DialogueStateTracker') -> None:
+    def apply_to(self, tracker: 'DialogueStateTracker', replay=False) -> None:
         tracker.trigger_followup_action(self.action_name)
 
 
@@ -680,7 +686,7 @@ class ConversationPaused(Event):
     def as_story_string(self):
         return self.type_name
 
-    def apply_to(self, tracker):
+    def apply_to(self, tracker, replay=False):
         tracker._paused = True
 
 
@@ -705,7 +711,7 @@ class ConversationResumed(Event):
     def as_story_string(self):
         return self.type_name
 
-    def apply_to(self, tracker):
+    def apply_to(self, tracker, replay=False):
         tracker._paused = False
 
 
@@ -766,7 +772,7 @@ class ActionExecuted(Event):
         })
         return d
 
-    def apply_to(self, tracker: 'DialogueStateTracker') -> None:
+    def apply_to(self, tracker: 'DialogueStateTracker', replay=False) -> None:
 
         tracker.set_latest_action_name(self.action_name)
         tracker.clear_followup_action()
@@ -799,7 +805,7 @@ class AgentUttered(Event):
         return "AgentUttered(text: {}, data: {})".format(
             self.text, json.dumps(self.data, indent=2))
 
-    def apply_to(self, tracker: 'DialogueStateTracker') -> None:
+    def apply_to(self, tracker: 'DialogueStateTracker', replay=False) -> None:
 
         pass
 
@@ -866,7 +872,7 @@ class Form(Event):
         d.update({"name": self.name})
         return d
 
-    def apply_to(self, tracker: 'DialogueStateTracker') -> None:
+    def apply_to(self, tracker: 'DialogueStateTracker', replay=False) -> None:
         tracker.change_form_to(self.name)
 
 
@@ -904,7 +910,7 @@ class FormValidation(Event):
         d.update({"validate": self.validate})
         return d
 
-    def apply_to(self, tracker: 'DialogueStateTracker') -> None:
+    def apply_to(self, tracker: 'DialogueStateTracker', replay=False) -> None:
         tracker.set_form_validation(self.validate)
 
 
@@ -954,5 +960,5 @@ class ActionExecutionRejected(Event):
                   "confidence": self.confidence})
         return d
 
-    def apply_to(self, tracker: 'DialogueStateTracker') -> None:
+    def apply_to(self, tracker: 'DialogueStateTracker', replay=False) -> None:
         tracker.reject_action(self.action_name)
