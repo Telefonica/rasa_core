@@ -183,6 +183,7 @@ class KerasPolicy(Policy):
                                epochs=self.epochs,
                                batch_size=self.batch_size,
                                shuffle=False,
+                               validation_split=self.validation_split,
                                **self._train_params)
                 # the default parameter for epochs in keras fit is 1
                 self.current_epoch = self.defaults.get("epochs", 1)
