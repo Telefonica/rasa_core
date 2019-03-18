@@ -397,6 +397,7 @@ class TrackerFeaturizer(object):
         """Create X for prediction"""
 
         trackers_as_states = self.prediction_states(trackers, domain)
+        logger.debug("trackers as states: {}".format(trackers_as_states))  # Added debug log
         X, _ = self._featurize_states(trackers_as_states)
         return X
 
