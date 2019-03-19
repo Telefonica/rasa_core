@@ -45,6 +45,40 @@ def get_cmd_input():
     else:
         return None
 
+def get_cmd_input_senderid():
+    """
+    Added to support for multi user tests on command line channel.
+    Returns input message along with senderid.
+
+    :return: (<message>, <senderid>)
+    """
+    response = questionary.text("",
+                                qmark="Your input ->",
+                                style=Style([('qmark', '#b373d6'),
+                                             ('', '#b373d6')])).ask()
+    if response is not None:
+        return get_text_senderid(response)
+    else:
+        return None, None
+
+def get_text_senderid(s):
+    """
+    Split a text into senderid and message.
+    Expected format is [<senderid>]<message>
+
+    :param s:
+    :return: (<message>, <senderid>)
+    """
+    if s is None:
+        return s
+    _sender_id = None
+    _text_message = s.strip()
+    if s.startswith("[") and "]" in s:
+        # sender_id is included into text
+        _sender_id = s[1:s.index("]")].strip()
+        _text_message = s[s.index("]")+1:].strip()
+    return _text_message, _sender_id
+
 
 def send_message_receive_block(server_url, auth_token, sender_id, message):
     payload = {
@@ -98,18 +132,21 @@ def record_messages(server_url=DEFAULT_SERVER_URL,
 
     num_messages = 0
     while not utils.is_limit_reached(num_messages, max_message_limit):
-        text = get_cmd_input()
+#        text = get_cmd_input()
+        text, _sender_id = get_cmd_input_senderid()
+        if _sender_id is None:
+            _sender_id = sender_id
         if text == exit_text or text is None:
             break
 
         if use_response_stream:
             bot_responses = send_message_receive_stream(server_url,
                                                         auth_token,
-                                                        sender_id, text)
+                                                        _sender_id, text)
         else:
             bot_responses = send_message_receive_block(server_url,
                                                        auth_token,
-                                                       sender_id, text)
+                                                       _sender_id, text)
 
         for response in bot_responses:
             print_bot_output(response)
