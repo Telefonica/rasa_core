@@ -4,6 +4,58 @@ Change Log
 All notable changes to this project will be documented in this file.
 This project adheres to `Semantic Versioning`_ starting with version 0.2.0.
 
+
+Aura changes
+^^^^^^^^^^^^
+
+Added
+------
+
+2019-03-19
+----------
+
+- Added support for multiuser test with command line channel. Now it is possible to specify the sender_id to
+  be used in command line writing messages with the following format:
+
+  [<sender_id>]<text_message>
+
+  Example:
+  [user1]I would like to make a reservation
+
+  This feature is useful for testing in multiuser prorotyping enviroments.
+
+2019-03.18
+----------
+
+- Added logging to featurizer: print "trackers as states" to make debugging easier.
+
+Changed
+-------
+
+2019-03-14
+----------
+
+- Added an extra parameter to the 'apply_to' method of Events: replay.
+  This argument must be True whenever this method is called from a replay
+  to rebuild the tracker from a list of events.
+  This is needed to support events taking actions on external context data,
+  to ensure that these actions are only carried out once.
+
+
+Removed
+-------
+
+Fixed
+-----
+
+2019-03-15
+----------
+
+- Fixed usage of validation_split parameter during training (it was actually ignored).
+
+
+
+
 .. _master-release:
 
 [Unreleased 0.14.0.aX] - `master`_
