@@ -28,7 +28,10 @@ logger = logging.getLogger(__name__)
 
 def configure_file_logging(loglevel, logfile):
     if logfile:
-        fh = logging.FileHandler(logfile)
+        fh = logging.FileHandler(logfile,mode='w')
+        formatter = logging.Formatter(fmt='%(asctime)s.%(msecs)03d;%(created).6f   %(levelname)-8s%(message)s'
+                                      ,datefmt='%Y-%m-%d %H:%M:%S')
+        fh.setFormatter(formatter)
         fh.setLevel(loglevel)
         logging.getLogger('').addHandler(fh)
     logging.captureWarnings(True)

@@ -8,6 +8,16 @@ This project adheres to `Semantic Versioning`_ starting with version 0.2.0.
 Aura changes
 ^^^^^^^^^^^^
 
+Changed
+-------
+
+2019-03-26
+----------
+
+- Added logging format in method "configure_file_logging" of the utils.py file. After this change, we can see
+  timestamp parameter in rasa core logs.
+
+
 Added
 ------
 
