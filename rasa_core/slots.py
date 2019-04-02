@@ -1,6 +1,7 @@
 import logging
 
 from rasa_core import utils
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -11,12 +12,23 @@ class Slot(object):
     def __init__(self, name,
                  initial_value=None,
                  value_reset_delay=None,
-                 auto_fill=True):
+                 auto_fill=True,
+                 timestamp=None):
         self.name = name
-        self.value = initial_value
+        self.__value = initial_value
         self.initial_value = initial_value
         self._value_reset_delay = value_reset_delay
         self.auto_fill = auto_fill
+        self.timestamp = timestamp
+
+    @property
+    def value(self):
+        return self.__value
+
+    @value.setter
+    def value(self, val):
+        self.__value = val
+        self.timestamp = time.time()
 
     def feature_dimensionality(self):
         """How many features this single slot creates.
