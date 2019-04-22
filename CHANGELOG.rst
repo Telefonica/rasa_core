@@ -32,6 +32,15 @@ Added
 Changed
 -------
 
+2019-04-22
+----------
+
+- Added support for localization of bot messages: added "message_code" element
+  in all BotMessages sent in utter_response method in Dispatcher class in rasa_core.dispatcher.py.
+  The "message_code" element is intended to contain localization instructions for bot utterances
+  (code, slots and values to replace in templates, etc.).
+
+
 2019-03-14
 ----------
 
