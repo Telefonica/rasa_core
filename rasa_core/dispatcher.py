@@ -49,10 +49,15 @@ class Dispatcher(object):
     def utter_response(self, message: Dict[Text, Any]) -> None:
         """Send a message to the client."""
 
+        # bot_message = BotMessage(text=message.get("text"),
+        #                          data={"elements": message.get("elements"),
+        #                                "buttons": message.get("buttons"),
+        #                                "attachment": message.get("image")})
         bot_message = BotMessage(text=message.get("text"),
                                  data={"elements": message.get("elements"),
                                        "buttons": message.get("buttons"),
-                                       "attachment": message.get("image")})
+                                       "attachment": message.get("image"),
+                                       "message_code": message.get("message_code")})  # Added "message_code" field in Aura
 
         self.latest_bot_messages.append(bot_message)
         self.output_channel.send_response(self.sender_id, message)
