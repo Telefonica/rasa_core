@@ -39,13 +39,13 @@ ACTION_DEFAULT_ASK_REPHRASE_NAME = 'action_default_ask_rephrase'
 
 def default_actions() -> List['Action']:
     """List default actions."""
-    from auracog_flow.rasa_core.actions.action import ActionEndOfDialogue, ActionFallbackIntentUnknown, \
-        ActionFallbackEntitiesUnknown, ActionFallbackGeneric
+    from auracog_flow.rasa_core.actions.action import ActionEndOfDialogue, ActionSoftEndOfDialogue, \
+        ActionFallbackIntentUnknown, ActionFallbackEntitiesUnknown, ActionFallbackGeneric
     return [ActionListen(), ActionRestart(),
             ActionDefaultFallback(), ActionDeactivateForm(),
             ActionRevertFallbackEvents(), ActionDefaultAskAffirmation(),
             ActionDefaultAskRephrase(),
-            ActionEndOfDialogue(),
+            ActionEndOfDialogue(), ActionSoftEndOfDialogue(),
             ActionFallbackEntitiesUnknown(), ActionFallbackIntentUnknown(), ActionFallbackGeneric()]
 
 
