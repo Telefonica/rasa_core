@@ -609,6 +609,14 @@ class Domain(object):
     def intents(self):
         return sorted(self.intent_properties.keys())
 
+    @utils.lazyproperty
+    def intents_as_set(self):
+        """
+        Get intents as a set.
+        :return:
+        """
+        return set(self.intent_properties.keys())
+
 
 class TemplateDomain(Domain):
     pass
