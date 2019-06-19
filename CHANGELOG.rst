@@ -11,6 +11,11 @@ Aura changes
 Added
 ------
 
+2019-06-19
+----------
+
+- Added ActionClearSlotsKeepDelta as default action from auracog_flow.rasa_core.actions.action.py.
+
 2019-03-19
 ----------
 
