@@ -232,7 +232,8 @@ class Domain(object):
                  action_names: List[Text],
                  form_names: List[Text],
                  store_entities_as_slots: bool = True,
-                 restart_intent="restart"  # type: Text
+                 restart_intent="restart",
+                 restartc_intent="restartc"# type: Text
                  ) -> None:
 
         self.intent_properties = intent_properties
@@ -248,6 +249,7 @@ class Domain(object):
             action_names) + form_names
         self.store_entities_as_slots = store_entities_as_slots
         self.restart_intent = restart_intent
+        self.restartc_intent = restartc_intent
 
         action.ensure_action_name_uniqueness(self.action_names)
 

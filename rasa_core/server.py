@@ -366,6 +366,51 @@ def create_app(agent,
         state = tracker.export_stories(e2e=True)
         return state
 
+    @app.route("/conversations/<sender_id>/storyc",
+               methods=['GET', 'OPTIONS'])
+    @cross_origin(origins=cors_origins)
+    @requires_auth(app, auth_token)
+    def retrieve_story_c(sender_id):
+        """
+        Get an end-to-end story corresponding to this conversation.
+        If the coversation has just finished, by means of a restart/restartc operation the conversation is recovered
+        from the field 'previous_events' if this field exists.
+        """
+
+        if not agent.tracker_store:
+            return error(503, "NoTrackerStore",
+                         "No tracker store available. Make sure to configure "
+                         "a tracker store when starting the server.")
+
+        # retrieve tracker and set to requested state
+        tracker = agent.tracker_store.get_or_create_tracker(sender_id)
+        if not tracker:
+            return error(503,
+                         "NoDomain",
+                         "Could not retrieve tracker. Most likely "
+                         "because there is no domain set on the agent.")
+
+        until_time = utils.float_arg('until')
+        if until_time is not None:
+            tracker = tracker.travel_back_in_time(until_time)
+
+        # Check if the conversation has just finished due to a restart. The following conditions must be met:
+        # - the 'previous_events' field exists within the tracker and its value is not empty.
+        # - the current events of the tracker does not contain ay event with type 'user' (i.e. no user interaction has
+        #   started yet).
+        regenerate_from_restart = False
+        if hasattr(tracker, "previous_events") and len(tracker.events) > 0:
+            regenerate_from_restart = True
+            for e in tracker.events:
+                if e.type_name == 'user':
+                    regenerate_from_restart = False
+                    break
+        if regenerate_from_restart:
+            tracker.events = tracker.previous_events
+        # dump and return tracker
+        state = tracker.export_stories(e2e=True)
+        return state
+
     @app.route("/conversations/<sender_id>/respond",
                methods=['GET', 'POST', 'OPTIONS'])
     @cross_origin(origins=cors_origins)
