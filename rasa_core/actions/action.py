@@ -39,16 +39,21 @@ ACTION_DEFAULT_ASK_REPHRASE_NAME = 'action_default_ask_rephrase'
 
 def default_actions() -> List['Action']:
     """List default actions."""
-    from auracog_flow.rasa_core.actions.action import ActionEndOfDialogue, ActionSoftEndOfDialogue, \
+    from auracog_flow.rasa_core.actions.action import ActionResetSlots, ActionEndOfDialogue, ActionSoftEndOfDialogue, \
         ActionFallbackIntentUnknown, ActionFallbackEntitiesUnknown, ActionFallbackGeneric, ActionClearSlotsKeepDelta, \
-        ActionRestartAndClear
+        ActionRestartAndClear, ActionCopySlots, ActionSetSlots, \
+        ActionFallbackRetry
     return [ActionListen(), ActionRestart(),
             ActionDefaultFallback(), ActionDeactivateForm(),
             ActionRevertFallbackEvents(), ActionDefaultAskAffirmation(),
             ActionDefaultAskRephrase(),
-            ActionEndOfDialogue(), ActionSoftEndOfDialogue(),
+            # RasAura default actions
+            ActionResetSlots(), ActionEndOfDialogue(), ActionSoftEndOfDialogue(),
             ActionFallbackEntitiesUnknown(), ActionFallbackIntentUnknown(), ActionFallbackGeneric(),
-            ActionClearSlotsKeepDelta(), ActionRestartAndClear()]
+            ActionClearSlotsKeepDelta(), ActionRestartAndClear(),
+#            ActionCopySlots(), ActionSetSlots(),
+            ActionFallbackRetry()
+            ]
 
 
 def default_action_names() -> List[Text]:
@@ -93,6 +98,12 @@ def action_from_name(name: Text, action_endpoint: Optional[EndpointConfig],
         return defaults.get(name)
     elif name.startswith("utter_"):
         return UtterAction(name)
+    elif name.startswith("copy_slots_"):
+        from auracog_flow.rasa_core.actions.action import ActionCopySlots
+        return ActionCopySlots(name)
+    elif name.startswith("set_slots_"):
+        from auracog_flow.rasa_core.actions.action import ActionSetSlots
+        return ActionSetSlots(name)
     else:
         return RemoteAction(name, action_endpoint)
 

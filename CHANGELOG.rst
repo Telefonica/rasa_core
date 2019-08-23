@@ -11,6 +11,23 @@ Aura changes
 Added
 ------
 
+2019-08-23
+----------
+
+- Added support for new default operations at rasa_core.actions.action.py action_from_name():
+
+    - ActionCopySlots
+    - ActionSetSlots
+
+  If the name of the action starts with *copy_slots_* or *set_slots_* the corresponding action is instantiated in the
+  same way as any *utter_action* are.
+
+  Other actions added as dafault:
+
+    - ActionRestartAndClear
+    - ActionFallbackRetry
+
+
 2019-06-19
 ----------
 
