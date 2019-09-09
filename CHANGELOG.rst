@@ -11,6 +11,16 @@ Aura changes
 Added
 ------
 
+2019-09-01
+----------
+
+- Added 'retrieve_story_c' operation to the HTTP interface in rasa_core.server.py:
+
+  Get an end-to-end story corresponding to the current conversation.
+  If the conversation has just finished, by means of a restart/restartc operation, the conversation is recovered
+  from the field 'previous_events' if this field exists in the tracker.
+
+
 2019-08-23
 ----------
 

@@ -372,9 +372,9 @@ def create_app(agent,
     @requires_auth(app, auth_token)
     def retrieve_story_c(sender_id):
         """
-        Get an end-to-end story corresponding to this conversation.
-        If the coversation has just finished, by means of a restart/restartc operation the conversation is recovered
-        from the field 'previous_events' if this field exists.
+        Get an end-to-end story corresponding to the current conversation.
+        If the conversation has just finished, by means of a restart/restartc operation, the conversation is recovered
+        from the field 'previous_events' if this field exists in the tracker.
         """
 
         if not agent.tracker_store:
