@@ -11,6 +11,8 @@ help:
 	@echo "        Run py.test"
 	@echo "    init"
 	@echo "        Install Rasa Core"
+	@echo "    html"
+	@echo "        Generate HTML documentation. Resulting docs are stored in doc/_build"
 
 init:
 	pip install -r requirements.txt
@@ -39,3 +41,6 @@ livedocs:
 check-readme:
 	# if this runs through we can be sure the readme is properly shown on pypi
 	python setup.py check --restructuredtext --strict
+
+html:
+	cd docs && make html
