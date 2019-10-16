@@ -4,6 +4,7 @@ import numpy as np
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
+tf.logging.set_verbosity(tf.logging.INFO)
 from tensor2tensor.models.transformer import (
     transformer_base,
     transformer_prepare_encoder,
