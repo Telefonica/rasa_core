@@ -24,6 +24,7 @@ from rasa_core.trackers import DialogueStateTracker
 from rasa_core.utils_extra import train_utils
 
 import tensorflow as tf
+tf.logging.set_verbosity(tf.logging.INFO)
 
 # avoid warning println on contrib import - remove for tf 2
 tf.contrib._warning = None
