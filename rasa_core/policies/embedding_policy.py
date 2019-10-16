@@ -27,8 +27,8 @@ import tensorflow as tf
 
 
 # avoid warning println on contrib import - remove for tf 2
-tf.contrib._warning = None
-logger = logging.getLogger(__name__)
+# tf.contrib._warning = None
+# logger = logging.getLogger(__name__)
 tf.logging.set_verbosity(tf.logging.INFO)
 
 class EmbeddingPolicy(Policy):
@@ -413,7 +413,7 @@ class EmbeddingPolicy(Policy):
     ) -> None:
         """Train the policy on given training trackers."""
 
-        logger.debug("Started training embedding policy.")
+        # logger.debug("Started training embedding policy.")
 
         # set numpy random seed
         np.random.seed(self.random_seed)
@@ -428,12 +428,12 @@ class EmbeddingPolicy(Policy):
         )
 
         # check if number of negatives is less than number of label_ids
-        logger.debug(
-            "Check if num_neg {} is smaller "
-            "than number of label_ids {}, "
-            "else set num_neg to the number of label_ids - 1"
-            "".format(self.num_neg, domain.num_actions)
-        )
+        # logger.debug(
+        #     "Check if num_neg {} is smaller "
+        #     "than number of label_ids {}, "
+        #     "else set num_neg to the number of label_ids - 1"
+        #     "".format(self.num_neg, domain.num_actions)
+        # )
         # noinspection PyAttributeOutsideInit
         self.num_neg = min(self.num_neg, domain.num_actions - 1)
 
@@ -547,11 +547,11 @@ class EmbeddingPolicy(Policy):
         """
 
         if self.session is None:
-            logger.error(
-                "There is no trained tf.session: "
-                "component is either not trained or "
-                "didn't receive enough training data"
-            )
+            # logger.error(
+            #     "There is no trained tf.session: "
+            #     "component is either not trained or "
+            #     "didn't receive enough training data"
+            # )
             return [0.0] * domain.num_actions
 
         tf_feed_dict = self.tf_feed_dict_for_prediction(tracker, domain)
