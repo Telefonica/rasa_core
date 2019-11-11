@@ -76,7 +76,7 @@ class PolicyEnsemble(object):
     def train(self,
               training_trackers: List[DialogueStateTracker],
               domain: Domain, **kwargs: Any) -> None:
-        if training_trackers:
+        if training_trackers is not None and len(training_trackers) > 0:
             for policy in self.policies:
                 policy.train(training_trackers, domain, **kwargs)
         else:
