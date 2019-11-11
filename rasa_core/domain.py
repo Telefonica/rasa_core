@@ -619,6 +619,40 @@ class Domain(object):
         """
         return set(self.intent_properties.keys())
 
+    def __eq__(self, other):
+        if self is other:
+            return True
+        if not isinstance(other, Domain):
+            return False
+        return self.intent_properties == other.intent_properties and \
+            self.entities == other.entities and \
+            self.form_names == other.form_names and \
+            self.templates == other.templates and \
+            self.action_names == other.action_names and \
+            self.user_actions == other.user_actions and \
+            self.store_entities_as_slots == other.store_entities_as_slots and \
+            self.restart_intent == other.restart_intent and \
+            self.restartc_intent == other.restartc_intent and \
+            self._eq_slots_lists(self.slots, other.slots)
+
+    def _eq_slots(self, slot1: Slot, slot2: Slot):
+        return slot1.type_name == slot2.type_name and \
+               slot1.name == slot2.name and \
+               slot1.initial_value == slot2.initial_value and \
+               slot1.value == slot2.value
+
+    def _eq_slots_lists(self, l1, l2):
+        if len(l1) != len(l2):
+            return False
+        d1 = {s.name:s for s in l1}
+        d2 = {s.name:s for s in l2}
+        if len(d1) != len(d2):
+            return False
+        for name, slot in d1.items():
+            if not self._eq_slots(slot, d2[name]):
+                return False
+        return True
+
 
 class TemplateDomain(Domain):
     pass
