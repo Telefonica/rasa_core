@@ -89,6 +89,20 @@ Removed
 Fixed
 -----
 
+
+2019-11-11
+----------
+
+- `rasa_core/policies/ensemble.py`: Improved checking of non empty training trackers. It is now more robust and covers
+the case where an empty list of training trackers is received for training.
+- `rasa_core/domain.py`: Added the method `__eq__' to allow the use of an external trainer (Gymnos). During training
+two instances of the same domain are compared. Previously the object references were compared. This worked when the
+dataset (training trackers) building and training were made within the same processing flow (because the same domain
+instance is used by dataset and trainer). However, different domain instances need to be compared when tow different
+objects of the same dataset are instantiated (this is what happens using Gymnos).
+
+
+
 2019-03-15
 ----------
 
